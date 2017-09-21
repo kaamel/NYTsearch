@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 /**
@@ -20,15 +21,17 @@ public class NYTimesModel extends NewsSourceAbst {
 
     private static final String API_KEY = "da9e50c7db454f93b8e15e49cdae794c";
     private static final String BASE_URL = "https://api.nytimes.com/svc/search/v2/" ;
-    private static final String ARTICLES = "articlesearch.json"+ "?api-key=" + API_KEY;
+    private static final String ARTICLES = "articlesearch.json"; //+ "?api-key=" + API_KEY;
+
+    private static final int pageSize = 10;
 
     NYTimesModel() {
         super();
     }
 
     @Override
-    public void getArticles(String query, final OnDownladArticles onDownladArticles) {
-        ((NYTApiService) apiService).getArticles(query).enqueue(new Callback<NYTResponse>() {
+    public void getArticles(String query, int page, final OnDownladArticles onDownladArticles) {
+        ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
             @Override
             public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
                 int statusCode = response.code();
@@ -55,13 +58,19 @@ public class NYTimesModel extends NewsSourceAbst {
     }
 
     @Override
+    int getPageSize() {
+        return pageSize;
+    }
+
+    @Override
     protected String getBaseUrl() {
         return BASE_URL;
     }
 
     interface NYTApiService {
+        @Headers({"api-key: " + API_KEY})
         @GET(ARTICLES)
-        public Call<NYTResponse> getArticles(@Query("q") String query);
+        public Call<NYTResponse> getArticles(@Query("q") String query, @Query("page") int page);
     }
 
     private class NYTResponse {

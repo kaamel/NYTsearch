@@ -6,9 +6,9 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,11 +36,14 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView rvResults;
     NewsSourceAbst model;
 
+    private static String lastQuery;
+
     private static List<Article> articles;
     private SearchResultsAdapter searchResultsAdapter;
 
     int numberOfColumns;
-    GridLayoutManager gridLayoutManager;
+    // Store a member variable for the listener
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +75,30 @@ public class SearchActivity extends AppCompatActivity {
         rvResults.setAdapter(searchResultsAdapter);
         // Set layout manager to position the items
         numberOfColumns = getResources().getInteger(R.integer.number_columns);
-        gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
-        rvResults.setLayoutManager(gridLayoutManager);
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL);
+        rvResults.setLayoutManager(staggeredGridLayoutManager);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(lastQuery, page);
+            }
+        };
+        rvResults.setOnScrollListener(scrollListener);
+    }
+
+    // Append the next page of data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    public void loadNextDataFromApi(String query, int offset) {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        //Snackbar.make(this.getCurrentFocus(), "Getting more data", Snackbar.LENGTH_LONG).show();
+        downloadSearchPage(query, offset);
     }
 
     @Override
@@ -120,18 +145,28 @@ public class SearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onArticleSearch(View view) {
+    public void onArticleSearch(final View view) {
         String query = etQuery.getText().toString();
+        lastQuery = query;
+        downloadSearchPage(query, 0);
+    }
 
-        model.getArticles(query, new NewsSourceAbst.OnDownladArticles() {
+    private void downloadSearchPage(String query, final int page) {
+        model.getArticles(query, page, new NewsSourceAbst.OnDownladArticles() {
             @Override
             public void onSuccessfulDownladArticles(List<? extends Article> a) {
-                List<Article> list = searchResultsAdapter.getArticles();
-                int count = articles.size();
-                articles.clear();
-                searchResultsAdapter.notifyItemRangeRemoved(0, count);
+                if (a.size() == 0) {
+                    Toast.makeText(SearchActivity.this, "Empty result ...", Toast.LENGTH_LONG).show();
+                    //Snackbar.make(findViewById(android.R.id.content).getRootView(), "Empty result ...", Snackbar.LENGTH_LONG).show();
+                }
+                if (page == 0) {
+                    int count = articles.size();
+                    articles.clear();
+                    searchResultsAdapter.notifyDataSetChanged();
+                    scrollListener.resetState();
+                }
                 articles.addAll(a);
-                searchResultsAdapter.notifyItemRangeInserted(0, a.size());
+                searchResultsAdapter.notifyItemRangeInserted(page * model.getPageSize(), a.size());
             }
 
             @Override
@@ -142,6 +177,7 @@ public class SearchActivity extends AppCompatActivity {
                     error = message.getString("message");
                 } catch (JSONException e) {
                 }
+                //Snackbar.make(findViewById(android.R.id.content).getRootView(), error, Snackbar.LENGTH_LONG).show();
                 Toast.makeText(SearchActivity.this, error, Toast.LENGTH_LONG).show();
             }
         });

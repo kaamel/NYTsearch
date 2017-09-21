@@ -35,7 +35,11 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View articleView = inflater.inflate(R.layout.item_article, parent, false);
+        View articleView;
+        if (viewType == 0)
+            articleView = inflater.inflate(R.layout.item_article, parent, false);
+        else
+            articleView = inflater.inflate(R.layout.item_article_no_thumbnail, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(articleView);
@@ -45,13 +49,20 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Article article = articles.get(position);
-
-        Glide.with(context)
-                .load("https://static01.nyt.com/" + article.getThumbNail())
-                .placeholder(R.drawable.nyt_logo)
-                .error(R.drawable.error)
-                .into(holder.ivTumbnail);
-        holder.tvHeadline.setText(article.getHeadline());
+        if (article.getThumbNail() != null) {
+            Glide.with(context)
+                    .load("https://static01.nyt.com/" + article.getThumbNail())
+                    .placeholder(R.drawable.nyt_logo)
+                    .error(R.drawable.ic_error_outline_deep_orange_a200_48dp)
+                    .into(holder.ivTumbnail);
+        }
+        if (article.getHeadline() != null) {
+            holder.tvHeadline.setText(article.getHeadline());
+            holder.tvHeadline.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.tvHeadline.setVisibility(View.GONE);
+        }
         holder.tvSnippet.setText(Html.fromHtml(article.getSnippet()));
 
     }
@@ -64,6 +75,13 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
     public int getItemCount() {
         return articles.size();
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return articles.get(position).getThumbNail() == null?1:0;
+    }
+
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
 

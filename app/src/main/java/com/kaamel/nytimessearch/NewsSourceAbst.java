@@ -22,7 +22,9 @@ public abstract class NewsSourceAbst {
         apiService = retrofit.create(NYTimesModel.NYTApiService.class);
     }
 
-    public abstract void getArticles(String query, OnDownladArticles onDownladArticles);
+    public abstract void getArticles(String query, int page, OnDownladArticles onDownladArticles);
+    abstract int getPageSize();
+
     protected abstract String getBaseUrl();
 
     interface OnDownladArticles {
