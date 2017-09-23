@@ -97,6 +97,14 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
             tvHeadline = (TextView) itemView.findViewById(R.id.tvHeadline);
             tvSnippet = (TextView) itemView.findViewById(R.id.tvSnippet);
             ivTumbnail = itemView.findViewById(R.id.ivThumbnail);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int position = getAdapterPosition();
+                    ((SearchActivity) context).onArticleClicked(position);
+                }
+            });
         }
     }
 }

@@ -2,6 +2,7 @@ package com.kaamel.nytimessearch;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -169,8 +170,10 @@ public class SearchActivity extends AppCompatActivity {
                     if (page == 0)
                         Toast.makeText(SearchActivity.this, "Didn't find any articles ...", Toast.LENGTH_LONG).show();
                     //Snackbar.make(findViewById(android.R.id.content).getRootView(), "Empty result ...", Snackbar.LENGTH_LONG).show();
-                    else
+                    else {
                         Toast.makeText(SearchActivity.this, "No more articles ...", Toast.LENGTH_LONG).show();
+                    }
+                    scrollListener.setEndIsReached();
                 }
                 else {
                     articles.addAll(a);
@@ -190,5 +193,11 @@ public class SearchActivity extends AppCompatActivity {
                 Toast.makeText(SearchActivity.this, error, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void onArticleClicked(int position) {
+        Intent intent = new Intent(this, DetailArticleActivity.class);
+        intent.putExtra("web_url", articles.get(position).getWebUrl());
+        startActivity(intent);
     }
 }

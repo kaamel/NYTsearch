@@ -5,7 +5,9 @@ import com.kaamel.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,6 +15,7 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by kaamel on 9/19/17.
@@ -60,18 +63,17 @@ public class NYTimesModel extends NewsSourceAbst {
 
     @Override
     public void getArticles(String query, int page, SearchFilter filter, final OnDownladArticles onDownladArticles) {
-        String sort = null;
-        switch (filter.sortOrder) {
-            case OLDEST:
+        Map<String, String> queryMap = new HashMap<>();
+        if (filter.sortOrder != SearchFilter.SortOrder.NONE) {
+            String sort = "newest";
+            if (filter.sortOrder == SearchFilter.SortOrder.OLDEST) {
                 sort = "oldest";
-                break;
-            case NEWEST:
-                sort = "newest";
-                break;
-            default:
-                sort = "";
+            }
+            queryMap.put("sort", sort);
         }
-        String beginDate = Utils.longToNYTDateString(filter.beginDate);
+
+        if (filter.beginDate >0)
+            queryMap.put ("begin_date", Utils.longToNYTDateString(filter.beginDate));
 
         String fq = "";
         if (filter.newsDesk != null && filter.newsDesk.length>0) {
@@ -79,14 +81,16 @@ public class NYTimesModel extends NewsSourceAbst {
             fq = "news_desk:(\"";
             for (String item: filter.newsDesk) {
                 if (b)
-                    fq = fq + " ";
+                    fq = fq + " \"";
                 fq = fq + item + "\"";
                 b = true;
             }
             fq = fq + ")";
+            queryMap.put("fq", fq);
         }
 
-        ((NYTApiService) apiService).getArticles(query, page, sort, beginDate, fq).enqueue(new Callback<NYTResponse>() {
+        if (queryMap.size()>0)
+            ((NYTApiService) apiService).getArticles(query, page, queryMap).enqueue(new Callback<NYTResponse>() {
             @Override
             public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
                 int statusCode = response.code();
@@ -110,6 +114,31 @@ public class NYTimesModel extends NewsSourceAbst {
                 onDownladArticles.onFailedDownload(t);
             }
         });
+        else
+            ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
+                @Override
+                public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
+                    int statusCode = response.code();
+                    if (response.isSuccessful()) {
+                        NYTResponse nytResponse = response.body();
+                        onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
+                    }
+                    else {
+                        String error = "Unknown error";
+                        try {
+                            error = response.errorBody().string();
+                        } catch (IOException e) {
+
+                        }
+                        onDownladArticles.onFailedDownload(new Throwable(error));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NYTResponse> call, Throwable t) {
+                    onDownladArticles.onFailedDownload(t);
+                }
+            });
     }
 
     @Override
@@ -126,6 +155,10 @@ public class NYTimesModel extends NewsSourceAbst {
         @Headers({"api-key: " + API_KEY})
         @GET(ARTICLES)
         public Call<NYTResponse> getArticles(@Query("q") String query, @Query("page") int page);
+
+        @Headers({"api-key: " + API_KEY})
+        @GET(ARTICLES)
+        public Call<NYTResponse> getArticles(@Query("q") String query, @Query("page") int page, @QueryMap Map<String, String> mp);
 
         @Headers({"api-key: " + API_KEY})
         @GET(ARTICLES)

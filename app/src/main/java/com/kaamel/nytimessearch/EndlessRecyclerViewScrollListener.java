@@ -22,6 +22,8 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // Sets the starting page index
     private int startingPageIndex = 0;
 
+    private static boolean endIsReached;
+
     RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollListener(LinearLayoutManager layoutManager) {
@@ -58,14 +60,9 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
-        /*
-        if (dx == lastDx && dy == lastDy) {
-            //eliminate initial scroll and when there really is no scroll
+        if (endIsReached)
             return;
-        }
-        lastDx = dx;
-        lastDy = dy;
-        */
+
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
 
@@ -112,6 +109,11 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         this.currentPage = this.startingPageIndex;
         this.previousTotalItemCount = 0;
         this.loading = true;
+        this.endIsReached = false;
+    }
+
+    public void setEndIsReached() {
+        endIsReached = true;
     }
 
     // Defines the process for actually loading more data based on page
