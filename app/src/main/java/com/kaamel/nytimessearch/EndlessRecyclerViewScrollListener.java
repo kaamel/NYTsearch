@@ -51,11 +51,21 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         return maxSize;
     }
 
+    int lastDx;
+    int lastDy;
     // This happens many times a second during a scroll, so be wary of the code you place here.
     // We are given a few useful parameters to help us work out if we need to load some more data,
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
+        /*
+        if (dx == lastDx && dy == lastDy) {
+            //eliminate initial scroll and when there really is no scroll
+            return;
+        }
+        lastDx = dx;
+        lastDy = dy;
+        */
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
 
@@ -90,7 +100,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+        else if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             currentPage++;
             onLoadMore(currentPage, totalItemCount, view);
             loading = true;

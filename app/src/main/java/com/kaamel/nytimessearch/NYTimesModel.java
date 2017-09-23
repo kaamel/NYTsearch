@@ -1,6 +1,7 @@
 package com.kaamel.nytimessearch;
 
 import com.google.gson.annotations.SerializedName;
+import com.kaamel.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import retrofit2.http.Query;
 
 public class NYTimesModel extends NewsSourceAbst {
 
-    private static final String API_KEY = "da9e50c7db454f93b8e15e49cdae794c";
+    private static final String API_KEY =  "227c750bb7714fc39ef1559ef1bd8329"; //"da9e50c7db454f93b8e15e49cdae794c";
     private static final String BASE_URL = "https://api.nytimes.com/svc/search/v2/" ;
     private static final String ARTICLES = "articlesearch.json"; //+ "?api-key=" + API_KEY;
 
@@ -32,6 +33,60 @@ public class NYTimesModel extends NewsSourceAbst {
     @Override
     public void getArticles(String query, int page, final OnDownladArticles onDownladArticles) {
         ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
+            @Override
+            public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
+                int statusCode = response.code();
+                if (response.isSuccessful()) {
+                    NYTResponse nytResponse = response.body();
+                    onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
+                }
+                else {
+                    String error = "Unknown error";
+                    try {
+                        error = response.errorBody().string();
+                    } catch (IOException e) {
+
+                    }
+                    onDownladArticles.onFailedDownload(new Throwable(error));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NYTResponse> call, Throwable t) {
+                onDownladArticles.onFailedDownload(t);
+            }
+        });
+    }
+
+    @Override
+    public void getArticles(String query, int page, SearchFilter filter, final OnDownladArticles onDownladArticles) {
+        String sort = null;
+        switch (filter.sortOrder) {
+            case OLDEST:
+                sort = "oldest";
+                break;
+            case NEWEST:
+                sort = "newest";
+                break;
+            default:
+                sort = "";
+        }
+        String beginDate = Utils.longToNYTDateString(filter.beginDate);
+
+        String fq = "";
+        if (filter.newsDesk != null && filter.newsDesk.length>0) {
+            boolean b = false;
+            fq = "news_desk:(\"";
+            for (String item: filter.newsDesk) {
+                if (b)
+                    fq = fq + " ";
+                fq = fq + item + "\"";
+                b = true;
+            }
+            fq = fq + ")";
+        }
+
+        ((NYTApiService) apiService).getArticles(query, page, sort, beginDate, fq).enqueue(new Callback<NYTResponse>() {
             @Override
             public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
                 int statusCode = response.code();
@@ -71,6 +126,15 @@ public class NYTimesModel extends NewsSourceAbst {
         @Headers({"api-key: " + API_KEY})
         @GET(ARTICLES)
         public Call<NYTResponse> getArticles(@Query("q") String query, @Query("page") int page);
+
+        @Headers({"api-key: " + API_KEY})
+        @GET(ARTICLES)
+        public Call<NYTResponse> getArticles(
+                @Query("q") String query,
+                @Query("page") int page,
+                @Query("sort") String sort,
+                @Query("begin_date") String beginDate,
+                @Query("fq") String newsDesks);
     }
 
     private class NYTResponse {

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <Spinner
+            android:id="@+id/spNewsDesk"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentTop="true"
+            android:entries="@array/news_desks_array"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Select News Desks" />
+
+
+        <TextView
+            android:id="@+id/tvBeginTime"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignBottom="@+id/etBeginTime"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/spNewsDesk"
+            android:layout_marginTop="5dp"
+            android:gravity="bottom"
+            android:paddingBottom="12dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="5dp"
+            android:text="Since"
+            android:textSize="18sp"
+            android:layout_toLeftOf="@+id/spSortOrder"
+            android:layout_toStartOf="@+id/spSortOrder" />
+
+        <EditText
+            android:id="@+id/etBeginTime"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/spNewsDesk"
+            android:layout_marginTop="5dp"
+            android:hint="Ever"
+            android:inputType="date"
+            android:textCursorDrawable="@null"
+            android:layout_toRightOf="@+id/tvBeginTime"
+            android:layout_toEndOf="@+id/tvBeginTime" />
+
+        <TextView
+            android:id="@+id/tvSortOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="bottom"
+            android:paddingBottom="12dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingStart="5dp"
+            android:text="Sort Order"
+            android:textSize="18sp"
+            android:layout_alignTop="@+id/spSortOrder"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Spinner
+            android:id="@+id/spSortOrder"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/etBeginTime"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@+id/tvSortOrder"
+            android:layout_toEndOf="@+id/tvSortOrder" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/spSortOrder"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="57dp">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:text="@string/cancel" />
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:text="@string/ok" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

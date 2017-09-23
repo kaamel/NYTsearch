@@ -23,6 +23,7 @@ public abstract class NewsSourceAbst {
     }
 
     public abstract void getArticles(String query, int page, OnDownladArticles onDownladArticles);
+    public abstract void getArticles(String query, int page, SearchFilter filter, OnDownladArticles onDownladArticles);
     abstract int getPageSize();
 
     protected abstract String getBaseUrl();

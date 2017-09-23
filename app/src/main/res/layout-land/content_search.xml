@@ -6,8 +6,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/symbol_new_york_times_alpha"
         android:padding="16dp"
+        android:background="@drawable/the_new_york_times_vector_logo_alpha"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.kaamel.nytimessearch.SearchActivity"
         tools:showIn="@layout/activity_search">

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="news_desks_array">
+        <item>News Desks</item>
+        <item>Art</item>
+        <item>Business</item>
+        <item>Education</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>Technology</item>
+    </string-array>
+</resources>

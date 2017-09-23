@@ -17,4 +17,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="spinner_dropdown_style_theme1" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
 </resources>

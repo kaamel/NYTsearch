@@ -34,7 +34,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        // Inflate the custom layout
+        // Inflate the custom spinner_sort_order_item
         View articleView;
         if (viewType == 0)
             articleView = inflater.inflate(R.layout.item_article, parent, false);

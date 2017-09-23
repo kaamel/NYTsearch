@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:background="#e0e0e0">
+        android:background="@android:color/holo_blue_light">
 
         <ImageView
             android:id="@+id/ivThumbnail"
@@ -34,6 +34,7 @@
             android:layout_toRightOf="@+id/ivThumbnail"
             android:gravity="center_vertical"
             android:text="TextView"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
@@ -45,7 +46,7 @@
             android:layout_below="@+id/ivThumbnail"
             android:layout_margin="5dp"
             android:text="TextView"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
     </RelativeLayout>
 
 </layout>

@@ -22,6 +22,7 @@
             android:maxLines="3"
             android:text="TextView"
             android:textAlignment="center"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
@@ -33,7 +34,7 @@
             android:layout_below="@+id/tvHeadline"
             android:layout_margin="5dp"
             android:text="TextView"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
     </RelativeLayout>
 
 </layout>
