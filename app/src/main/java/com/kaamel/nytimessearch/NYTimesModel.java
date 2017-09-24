@@ -200,6 +200,9 @@ public class NYTimesModel extends NewsSourceAbst {
         @SerializedName("multimedia")
         List<MM> multimedia;
 
+        @SerializedName(("pub_date"))
+        String pubDate;
+
         private class MM {
             @SerializedName("url")
             String url;
@@ -216,7 +219,12 @@ public class NYTimesModel extends NewsSourceAbst {
 
         @Override
         public String getSnippet() {
-            return snippet;
+            return Utils.localNytTimeToLong(pubDate) + " " + snippet;
+        }
+
+        @Override
+        public String getPubDate() {
+            return pubDate;
         }
 
         @Override

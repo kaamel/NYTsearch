@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.kaamel.Utils;
 import com.kaamel.nytimessearch.databinding.ActivitySearchBinding;
 
 import org.json.JSONException;
@@ -163,6 +165,16 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void downloadSearchPage(String query, final int page) {
+        if (!Utils.isNetworkAvailable(this)) {
+            Snackbar.make(rvResults, "You are not connected to network", 0).show();
+            return;
+        }
+        else {
+            if (!Utils.isOnline()) {
+                Snackbar.make(rvResults, "You don't have internet access", 0).show();
+                return;
+            }
+        }
         model.getArticles(query, page, filter, new NewsSourceAbst.OnDownladArticles() {
             @Override
             public void onSuccessfulDownladArticles(List<? extends Article> a) {

@@ -4,6 +4,11 @@ package com.kaamel;
  * Created by kaamel on 9/21/17.
  */
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +54,24 @@ public class Utils {
         return formatter.format(date);
     }
 
+    public static String localNytTimeToLong (String ntime) {
+        if (ntime == null)
+            return "";
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String fTime = ntime.substring(0, ntime.length()-5);
+        fTime = fTime.replace("T", " ");
+        formatter.setLenient(false);
+        long time = 0;
+        try {
+            time = formatter.parse(fTime).getTime();
+        } catch (ParseException ignored) {
+        }
+        if (time == 0)
+            return "";
+        else
+            return longToDateString(time);
+    }
+
     public static String longToNYTDateString(long time) {
         Date date = new Date(time);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -83,6 +106,24 @@ public class Utils {
     public static int longToDay(long time) {
         SimpleDateFormat sdf = new SimpleDateFormat("d");
         return Integer.valueOf(sdf.format(new Date(time)));
+    }
+
+    public static Boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public static boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
     }
 
     public static long getYesterdayLong() {

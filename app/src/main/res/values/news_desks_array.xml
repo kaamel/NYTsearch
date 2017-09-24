@@ -2,9 +2,10 @@
 <resources>
     <string-array name="news_desks_array">
         <item>News Desks</item>
-        <item>Art</item>
+        <item>Arts</item>
         <item>Business</item>
         <item>Education</item>
+        <item>Fashion &amp; Style</item>
         <item>Science</item>
         <item>Sports</item>
         <item>Technology</item>

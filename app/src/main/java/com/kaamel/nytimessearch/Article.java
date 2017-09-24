@@ -9,4 +9,5 @@ public interface Article {
     String getHeadline();
     String getThumbNail();
     String getSnippet();
+    String getPubDate();
 }
