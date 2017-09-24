@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" >
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -40,10 +41,8 @@
 
         <EditText
             android:id="@+id/etBeginTime"
-            android:layout_width="match_parent"
+            android:layout_width="120dp"
             android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_below="@+id/spNewsDesk"
             android:layout_marginTop="5dp"
             android:hint="Ever"
@@ -104,6 +103,18 @@
                 android:text="@string/ok" />
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/ibClearDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
+            android:layout_marginStart="17dp"
+            android:layout_toEndOf="@+id/etBeginTime"
+            android:layout_toRightOf="@+id/etBeginTime"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_alignTop="@+id/etBeginTime"
+            android:layout_above="@+id/spSortOrder" />
 
     </RelativeLayout>
 

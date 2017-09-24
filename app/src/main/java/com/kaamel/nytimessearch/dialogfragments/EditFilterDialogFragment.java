@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
 
     private NYTSearchFilter filter;
 
-    private EditText dueDateET;
+    private EditText etBeginDate;
 
     public EditFilterDialogFragment() {
         // Required empty public constructor
@@ -68,6 +69,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
 
         Button actionButton = v.findViewById(R.id.btnSave);
         Button cancelButton = v.findViewById(R.id.btnCancel);
+        ImageButton ibClearDate = v.findViewById(R.id.ibClearDate);
         final Spinner spSortOrder = v.findViewById(R.id.spSortOrder);
         //ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.sort_order_array, R.layout.spinner_sort_order_item);
         //ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_sort_order_item, SearchFilter.SortOrder.getTitles());
@@ -83,7 +85,9 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
 
         actionButton.setOnClickListener(v1 -> {
             // When button is clicked, call up to owning activity.
-            filter.setBeginDate(Utils.dateToLong(dueDateET.getText().toString()));
+            filter.setBeginDate(0);
+            if (!etBeginDate.getText().toString().equals(""))
+                filter.setBeginDate(Utils.dateToLong(etBeginDate.getText().toString()));
             filter.setCategories(newsDeskList.getNewsDesks());
             String name = (String) spSortOrder.getSelectedItem();
             if (name == null || name.equals("Articles Not Sorted"))
@@ -102,10 +106,14 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
             dismiss();
         });
 
-        dueDateET = v.findViewById(R.id.etBeginTime);
-        dueDateET.setText(Utils.longToDateString(filter.getBeginDate()==0?Utils.getTodayLong():filter.getBeginDate()));
+        ibClearDate.setOnClickListener(view -> {
+            etBeginDate.setText("");
+        });
 
-        long time = Utils.dateToLong(dueDateET.getText().toString());
+        etBeginDate = v.findViewById(R.id.etBeginTime);
+        etBeginDate.setText(Utils.longToDateString(filter.getBeginDate()==0?Utils.getTodayLong():filter.getBeginDate()));
+
+        long time = Utils.dateToLong(etBeginDate.getText().toString());
         int startYear = Utils.longToYear(time);
         int starthMonth = Utils.longToMonth(time);
         int startDay = Utils.longToDay(time);
@@ -114,7 +122,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         datePickerDialog.getDatePicker().setCalendarViewShown(true);
         datePickerDialog.getDatePicker().setSpinnersShown(false);
 
-        dueDateET.setOnFocusChangeListener((view, b) -> {
+        etBeginDate.setOnFocusChangeListener((view, b) -> {
             if (b) {
                 datePickerDialog.show();
             }
@@ -142,7 +150,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        dueDateET.setText(Utils.longToDateString(calendar.getTime().getTime()));
-        dueDateET.clearFocus();
+        etBeginDate.setText(Utils.longToDateString(calendar.getTime().getTime()));
+        etBeginDate.clearFocus();
     }
 }

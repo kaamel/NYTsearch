@@ -220,6 +220,14 @@ public class NYTimesModel extends NewsSourceAbst {
         @SerializedName(("pub_date"))
         String pubDate;
 
+        @SerializedName(("byline"))
+        By by;
+
+        private class By {
+            @SerializedName("original")
+            String original;
+        }
+
         private class MM {
             @SerializedName("url")
             String url;
@@ -236,7 +244,12 @@ public class NYTimesModel extends NewsSourceAbst {
 
         @Override
         public String getSnippet() {
-            return Utils.localNytTimeToLong(pubDate) + " " + snippet;
+            return snippet;
+        }
+
+        @Override
+        public String getByLine() {
+            return by==null?"":by.original;
         }
 
         @Override

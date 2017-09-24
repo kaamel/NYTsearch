@@ -14,6 +14,7 @@ import com.kaamel.nytimessearch.R;
 import com.kaamel.nytimessearch.activities.SearchActivity;
 import com.kaamel.nytimessearch.data.Article;
 import com.kaamel.nytimessearch.utils.RoundedCornersTransformation;
+import com.kaamel.nytimessearch.utils.Utils;
 
 import java.util.List;
 
@@ -64,11 +65,13 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         if (article.getHeadline() != null) {
             holder.tvHeadline.setText(article.getHeadline());
             holder.tvHeadline.setVisibility(View.VISIBLE);
+            holder.tvHeadline.setVisibility(View.VISIBLE);
         }
         else {
             holder.tvHeadline.setVisibility(View.GONE);
         }
         holder.tvSnippet.setText(Html.fromHtml(article.getSnippet()));
+        holder.tvSecondLine.setText(article.getByLine() + " " +Utils.localNytTimeToLong(article.getPubDate()));
 
     }
 
@@ -92,16 +95,19 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
 
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public TextView tvHeadline;
-        public TextView tvSnippet;
-        public ImageView ivTumbnail;
+        TextView tvHeadline;
+        TextView tvSnippet;
+        ImageView ivTumbnail;
+        TextView tvSecondLine;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             tvHeadline = (TextView) itemView.findViewById(R.id.tvHeadline);
             tvSnippet = (TextView) itemView.findViewById(R.id.tvSnippet);
             ivTumbnail = itemView.findViewById(R.id.ivThumbnail);
+            tvSecondLine = itemView.findViewById(R.id.tvSecondLine);
+            //Utils.localNytTimeToLong(pubDate) + " " + snippet;
 
             itemView.setOnClickListener(view -> {
                 final int position = getAdapterPosition();
