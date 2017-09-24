@@ -40,6 +40,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -57,6 +58,7 @@ public class SearchActivity extends AppCompatActivity {
     int numberOfColumns;
     // Store a member variable for the listener
     private EndlessRecyclerViewScrollListener scrollListener;
+    ActionBar sab;
 
     private static NYTSearchFilter filter;
 
@@ -67,12 +69,17 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
-        ActionBar sab = getSupportActionBar();
+        sab = getSupportActionBar();
         if (sab != null) {
             sab.setDisplayShowHomeEnabled(true);
-            sab.setLogo(R.mipmap.ic_launcher);
+            sab.setLogo(R.mipmap.ic_launcher_round);
             sab.setDisplayUseLogoEnabled(true);
-            sab.setDisplayShowTitleEnabled(false);
+            if (lastQuery == null || lastQuery.length() ==0)
+                sab.setDisplayShowTitleEnabled(false);
+            else {
+                sab.setTitle(getSearchTitle());
+                sab.setDisplayShowTitleEnabled(true);
+            }
         }
 
         if (filter == null)
@@ -171,6 +178,10 @@ public class SearchActivity extends AppCompatActivity {
         articles.clear();
         searchResultsAdapter.notifyDataSetChanged();
         scrollListener.resetState();
+        if (sab!=null) {
+            sab.setTitle(getSearchTitle());
+            sab.setDisplayShowTitleEnabled(true);
+        }
         downloadSearchPage(query, 0);
     }
 
@@ -234,7 +245,7 @@ public class SearchActivity extends AppCompatActivity {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         // set toolbar color and/or setting custom actions before invoking build()
         // set toolbar color
-        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorAccent));
+        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
         // add share action to menu list
         builder.addDefaultShareMenuItem();
 
@@ -257,5 +268,15 @@ public class SearchActivity extends AppCompatActivity {
         CustomTabsIntent customTabsIntent = builder.build();
         // and launch the desired Url with CustomTabsIntent.launchUrl()
         customTabsIntent.launchUrl(this, Uri.parse(articles.get(position).getWebUrl()));
+    }
+
+    public String getSearchTitle() {
+        String title = lastQuery ==null?"":lastQuery.toUpperCase(Locale.getDefault());
+        if (filter != null && filter.getCategories() != null && filter.getCategories().length > 0) {
+            for (String string: filter.getCategories()) {
+                title = title + " " + string.toUpperCase(Locale.getDefault());
+            }
+        }
+        return title;
     }
 }
