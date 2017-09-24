@@ -148,23 +148,13 @@ public class NYTimesModel extends NewsSourceAbst {
 
     private void retryFull(String query, int page, SearchFilter filter, Map<String, String> queryMap, OnDownladArticles onDownladArticles, int retry) {
         Handler handler = new Handler();
-        Runnable runnableCode = new Runnable() {
-            @Override
-            public void run() {
-                callFull(query, page, filter, queryMap, onDownladArticles, retry);
-            }
-        };
+        Runnable runnableCode = () -> callFull(query, page, filter, queryMap, onDownladArticles, retry);
         handler.postDelayed(runnableCode, 1000);
     }
 
     private void retrySimple(String query, int page, OnDownladArticles onDownladArticles, int retry) {
         Handler handler = new Handler();
-        Runnable runnableCode = new Runnable() {
-            @Override
-            public void run() {
-                callSimple(query, page, onDownladArticles, retry);
-            }
-        };
+        Runnable runnableCode = () -> callSimple(query, page, onDownladArticles, retry);
         handler.postDelayed(runnableCode, 1000);
     }
 
@@ -275,13 +265,13 @@ public class NYTimesModel extends NewsSourceAbst {
 
         private class HeadLine {
             @SerializedName("main")
-            String main;
+            String headline;
 
             @SerializedName("kicker")
             String kicker;
 
             @SerializedName("print_headline")
-            String headline;
+            String print_headline;
         }
     }
 

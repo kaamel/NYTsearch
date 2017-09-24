@@ -2,6 +2,7 @@ package com.kaamel.nytimessearch.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -18,26 +19,25 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kaamel.nytimessearch.R;
+import com.kaamel.nytimessearch.databinding.ActivityDetailArticleBinding;
 
 public class DetailArticleActivity extends AppCompatActivity {
 
+    private ActivityDetailArticleBinding binding;
+
     WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_article);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_article);
+
+        Toolbar toolbar = binding.toolbarDetail;
         setSupportActionBar(toolbar);
         ActionBar sab = getSupportActionBar();
-        if (sab != null) {
-            sab.setDisplayShowHomeEnabled(true);
-            sab.setLogo(R.mipmap.ic_launcher);
-            sab.setDisplayUseLogoEnabled(true);
-            sab.setDisplayShowTitleEnabled(false);
-        }
 
         getIntent().getStringExtra("web_url");
-        webView = (WebView) findViewById(R.id.webDetailArticle);
+        webView = binding.detailInclude.webDetailArticle;
         // Configure related browser settings
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.getSettings().setJavaScriptEnabled(true);

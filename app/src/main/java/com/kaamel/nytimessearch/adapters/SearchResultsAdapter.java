@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.kaamel.nytimessearch.R;
 import com.kaamel.nytimessearch.activities.SearchActivity;
 import com.kaamel.nytimessearch.data.Article;
+import com.kaamel.nytimessearch.utils.RoundedCornersTransformation;
 
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
                     .load("https://static01.nyt.com/" + article.getThumbNail())
                     .placeholder(R.drawable.nyt_logo)
                     .error(R.drawable.ic_error_outline_deep_orange_a200_48dp)
+                    .bitmapTransform(new RoundedCornersTransformation( context, 10, 2))
                     .into(holder.ivTumbnail);
         }
         if (article.getHeadline() != null) {
@@ -101,12 +103,9 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
             tvSnippet = (TextView) itemView.findViewById(R.id.tvSnippet);
             ivTumbnail = itemView.findViewById(R.id.ivThumbnail);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final int position = getAdapterPosition();
-                    ((SearchActivity) context).onArticleClicked(position);
-                }
+            itemView.setOnClickListener(view -> {
+                final int position = getAdapterPosition();
+                ((SearchActivity) context).onArticleClicked(position);
             });
         }
     }

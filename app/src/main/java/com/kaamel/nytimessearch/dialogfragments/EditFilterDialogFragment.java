@@ -81,30 +81,25 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
 
         final Calendar c = Calendar.getInstance();
 
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // When button is clicked, call up to owning activity.
-                filter.setBeginDate(Utils.dateToLong(dueDateET.getText().toString()));
-                filter.setCategories(newsDeskList.getNewsDesks());
-                String name = (String) spSortOrder.getSelectedItem();
-                if (name == null || name.equals("Articles Not Sorted"))
-                    filter.setSortOrder(NYTSearchFilter.SortOrder.NONE);
-                else if (name.equals("Latest First"))
-                    filter.setSortOrder(NYTSearchFilter.SortOrder.NEWEST);
-                else
-                    filter.setSortOrder(NYTSearchFilter.SortOrder.OLDEST);
-                filter.setCheckboxes(newsDeskList.getCheckboxes());
-                ((SearchActivity) getActivity()).filterUpdated(filter);
-                dismiss();
-            }
+        actionButton.setOnClickListener(v1 -> {
+            // When button is clicked, call up to owning activity.
+            filter.setBeginDate(Utils.dateToLong(dueDateET.getText().toString()));
+            filter.setCategories(newsDeskList.getNewsDesks());
+            String name = (String) spSortOrder.getSelectedItem();
+            if (name == null || name.equals("Articles Not Sorted"))
+                filter.setSortOrder(NYTSearchFilter.SortOrder.NONE);
+            else if (name.equals("Latest First"))
+                filter.setSortOrder(NYTSearchFilter.SortOrder.NEWEST);
+            else
+                filter.setSortOrder(NYTSearchFilter.SortOrder.OLDEST);
+            filter.setCheckboxes(newsDeskList.getCheckboxes());
+            ((SearchActivity) getActivity()).filterUpdated(filter);
+            dismiss();
         });
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), "cancelled ...", Toast.LENGTH_SHORT).show();
-                dismiss();
-            }
+        cancelButton.setOnClickListener(view -> {
+            Toast.makeText(getContext(), "cancelled ...", Toast.LENGTH_SHORT).show();
+            dismiss();
         });
 
         dueDateET = v.findViewById(R.id.etBeginTime);
@@ -119,12 +114,9 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         datePickerDialog.getDatePicker().setCalendarViewShown(true);
         datePickerDialog.getDatePicker().setSpinnersShown(false);
 
-        dueDateET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    datePickerDialog.show();
-                }
+        dueDateET.setOnFocusChangeListener((view, b) -> {
+            if (b) {
+                datePickerDialog.show();
             }
         });
 
@@ -138,12 +130,9 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         super.onResume();
         final Spinner editText = getView().findViewById(R.id.spNewsDesk);
         editText.requestFocus();
-        editText.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-            }
+        editText.postDelayed(() -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }, 500);
     }
 

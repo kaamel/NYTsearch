@@ -109,7 +109,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         this.currentPage = this.startingPageIndex;
         this.previousTotalItemCount = 0;
         this.loading = true;
-        this.endIsReached = false;
+        endIsReached = false;
     }
 
     public void setEndIsReached() {
