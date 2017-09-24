@@ -1,4 +1,4 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.dialogfragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -15,11 +15,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.kaamel.Utils;
+import com.kaamel.nytimessearch.utils.Utils;
+import com.kaamel.nytimessearch.R;
+import com.kaamel.nytimessearch.activities.SearchActivity;
+import com.kaamel.nytimessearch.adapters.NewsDeskArrayAdapter;
+import com.kaamel.nytimessearch.data.NYTSearchFilter;
 
 import java.util.Calendar;
 
-import static com.kaamel.nytimessearch.SearchFilter.FILTER;
+import static com.kaamel.nytimessearch.data.NYTSearchFilter.FILTER;
 
 /**
  * Created by kaamel on 9/21/17.
@@ -28,7 +32,7 @@ import static com.kaamel.nytimessearch.SearchFilter.FILTER;
 public class EditFilterDialogFragment extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
     // TODO: Rename parameter arguments, choose names that match
 
-    private SearchFilter filter;
+    private NYTSearchFilter filter;
 
     private EditText dueDateET;
 
@@ -36,10 +40,10 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         // Required empty public constructor
     }
 
-    public static EditFilterDialogFragment newInstance(SearchFilter filter) {
+    public static EditFilterDialogFragment newInstance(NYTSearchFilter filter) {
         EditFilterDialogFragment fragment = new EditFilterDialogFragment();
         Bundle filterBundle = new Bundle();
-        filterBundle.putBundle(FILTER, SearchFilter.getBundle(filter));
+        filterBundle.putBundle(FILTER, NYTSearchFilter.getBundle(filter));
         fragment.setArguments(filterBundle);
         return fragment;
     }
@@ -48,7 +52,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            filter = SearchFilter.getFilter(getArguments().getBundle(FILTER));
+            filter = NYTSearchFilter.getFilter(getArguments().getBundle(FILTER));
         }
     }
 
@@ -67,12 +71,12 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         final Spinner spSortOrder = v.findViewById(R.id.spSortOrder);
         //ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.sort_order_array, R.layout.spinner_sort_order_item);
         //ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.spinner_sort_order_item, SearchFilter.SortOrder.getTitles());
-        spSortOrder.setAdapter(new ArrayAdapter<>(getContext(), R.layout.spinner_sort_order_item, SearchFilter.SortOrder.getTitles()));
+        spSortOrder.setAdapter(new ArrayAdapter<>(getContext(), R.layout.spinner_sort_order_item, NYTSearchFilter.SortOrder.getTitles()));
         //spinner.setAdapter(adapter);
 
-        if (filter.sortOrder == SearchFilter.SortOrder.NEWEST)
+        if (filter.getSortorder() == NYTSearchFilter.SortOrder.NEWEST)
             spSortOrder.setSelection(1);
-        else if (filter.sortOrder == SearchFilter.SortOrder.OLDEST)
+        else if (filter.getSortorder() == NYTSearchFilter.SortOrder.OLDEST)
             spSortOrder.setSelection(2);
 
         final Calendar c = Calendar.getInstance();
@@ -80,15 +84,15 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         actionButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // When button is clicked, call up to owning activity.
-                filter.beginDate = Utils.dateToLong(dueDateET.getText().toString());
-                filter.newsDesk = newsDeskList.getNewsDesks();
+                filter.setBeginDate(Utils.dateToLong(dueDateET.getText().toString()));
+                filter.setCategories(newsDeskList.getNewsDesks());
                 String name = (String) spSortOrder.getSelectedItem();
                 if (name == null || name.equals("Articles Not Sorted"))
-                    filter.sortOrder = SearchFilter.SortOrder.NONE;
+                    filter.setSortOrder(NYTSearchFilter.SortOrder.NONE);
                 else if (name.equals("Latest First"))
-                    filter.sortOrder = SearchFilter.SortOrder.NEWEST;
+                    filter.setSortOrder(NYTSearchFilter.SortOrder.NEWEST);
                 else
-                    filter.sortOrder = SearchFilter.SortOrder.OLDEST;
+                    filter.setSortOrder(NYTSearchFilter.SortOrder.OLDEST);
                 filter.setCheckboxes(newsDeskList.getCheckboxes());
                 ((SearchActivity) getActivity()).filterUpdated(filter);
                 dismiss();
@@ -104,7 +108,7 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         });
 
         dueDateET = v.findViewById(R.id.etBeginTime);
-        dueDateET.setText(Utils.longToDateString(filter.beginDate==0?Utils.getTodayLong():filter.beginDate));
+        dueDateET.setText(Utils.longToDateString(filter.getBeginDate()==0?Utils.getTodayLong():filter.getBeginDate()));
 
         long time = Utils.dateToLong(dueDateET.getText().toString());
         int startYear = Utils.longToYear(time);

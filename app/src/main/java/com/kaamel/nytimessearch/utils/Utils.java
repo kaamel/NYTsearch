@@ -1,4 +1,4 @@
-package com.kaamel;
+package com.kaamel.nytimessearch.utils;
 
 /**
  * Created by kaamel on 9/21/17.

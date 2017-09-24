@@ -1,4 +1,7 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.model;
+
+import com.kaamel.nytimessearch.data.Article;
+import com.kaamel.nytimessearch.data.SearchFilter;
 
 import java.util.List;
 
@@ -24,11 +27,11 @@ public abstract class NewsSourceAbst {
 
     public abstract void getArticles(String query, int page, OnDownladArticles onDownladArticles);
     public abstract void getArticles(String query, int page, SearchFilter filter, OnDownladArticles onDownladArticles);
-    abstract int getPageSize();
+    public abstract int getPageSize();
 
     protected abstract String getBaseUrl();
 
-    interface OnDownladArticles {
+    public interface OnDownladArticles {
         abstract void onSuccessfulDownladArticles(List<? extends Article> articles);
         abstract void onFailedDownload(Throwable t);
     }

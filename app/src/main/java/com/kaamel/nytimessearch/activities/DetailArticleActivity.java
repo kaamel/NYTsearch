@@ -1,4 +1,4 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -16,6 +16,8 @@ import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.kaamel.nytimessearch.R;
 
 public class DetailArticleActivity extends AppCompatActivity {
 

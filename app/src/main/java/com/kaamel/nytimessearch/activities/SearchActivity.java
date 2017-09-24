@@ -1,4 +1,4 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.activities;
 
 import android.app.PendingIntent;
 import android.app.SearchManager;
@@ -24,8 +24,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.kaamel.Utils;
+import com.kaamel.nytimessearch.utils.Utils;
+import com.kaamel.nytimessearch.dialogfragments.EditFilterDialogFragment;
+import com.kaamel.nytimessearch.listeners.EndlessRecyclerViewScrollListener;
+import com.kaamel.nytimessearch.R;
+import com.kaamel.nytimessearch.adapters.SearchResultsAdapter;
+import com.kaamel.nytimessearch.data.NYTSearchFilter;
 import com.kaamel.nytimessearch.databinding.ActivitySearchBinding;
+import com.kaamel.nytimessearch.data.Article;
+import com.kaamel.nytimessearch.model.NYTimesModel;
+import com.kaamel.nytimessearch.model.NewsSourceAbst;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
     // Store a member variable for the listener
     private EndlessRecyclerViewScrollListener scrollListener;
 
-    private static SearchFilter filter;
+    private static NYTSearchFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +76,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         if (filter == null)
-            filter = new SearchFilter();
+            filter = new NYTSearchFilter();
 
         rvResults = binding.included.rvResults;
 
@@ -166,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
         downloadSearchPage(query, 0);
     }
 
-    public void filterUpdated(SearchFilter filter) {
+    public void filterUpdated(NYTSearchFilter filter) {
         this.filter = filter;
     }
 

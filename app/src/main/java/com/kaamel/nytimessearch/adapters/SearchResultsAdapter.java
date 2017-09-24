@@ -1,4 +1,4 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.kaamel.nytimessearch.R;
+import com.kaamel.nytimessearch.activities.SearchActivity;
+import com.kaamel.nytimessearch.data.Article;
 
 import java.util.List;
 

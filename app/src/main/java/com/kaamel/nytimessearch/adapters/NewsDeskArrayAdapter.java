@@ -1,4 +1,4 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.adapters;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+
+import com.kaamel.nytimessearch.R;
 
 import java.util.ArrayList;
 import java.util.List;

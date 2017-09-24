@@ -1,19 +1,15 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.data;
 
 import android.os.Bundle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kaamel on 9/21/17.
  */
 
 
-public class SearchFilter {
+public class NYTSearchFilter implements SearchFilter {
 
-    public static final String FILTER = "filter";
-    public static final String BEGIN_DATE = "begin_date";
+    private static final String BEGIN_DATE = "begin_date";
     private static final String NEWS_DESK = "news_desk";
     private static final String SORT_ORDER = "sort_order";
 
@@ -22,58 +18,64 @@ public class SearchFilter {
     SortOrder sortOrder;
     boolean[] checkboxes;
 
-    public static SearchFilter getFilter(Bundle bundle) {
+    public static NYTSearchFilter getFilter(Bundle bundle) {
         if (bundle == null) {
-            return new SearchFilter();
+            return new NYTSearchFilter();
         }
-        return new SearchFilter(
+        return new NYTSearchFilter(
                 bundle.getLong(BEGIN_DATE),
                 bundle.getStringArray(NEWS_DESK),
                 SortOrder.valueOf(bundle.getString(SORT_ORDER)),
                 bundle.getBooleanArray("checkboxes"));
     }
 
-    enum SortOrder {
-        NONE,
-        NEWEST,
-        OLDEST;
-
-        static String[] titles = {
-                "Articles Not Sorted",
-                "Latest First",
-                "Oldest First"
-        };
-
-        public static List<String> getTitles() {
-            List<String> ts = new ArrayList<>();
-            for (int i=0 ; i <titles.length; i++) {
-                ts.add(titles[i]);
-            }
-            return ts;
-        }
-
-        public String getTitle() {
-            return titles[ordinal()];
-        }
+    @Override
+    public SearchFilter.SortOrder getSortorder() {
+        return sortOrder;
     }
 
-    public SearchFilter() {
+    @Override
+    public void setSortOrder(SearchFilter.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @Override
+    public long getBeginDate() {
+        return beginDate;
+    }
+
+    @Override
+    public void setBeginDate(long date) {
+        beginDate = date;
+    }
+
+    @Override
+    public String[] getCategories() {
+        return newsDesk;
+    }
+
+    @Override
+    public void setCategories(String[] categories) {
+        newsDesk = categories;
+    }
+
+    public NYTSearchFilter() {
         beginDate = 0;
         newsDesk = new String[0];
         sortOrder = SortOrder.NONE;
     }
 
-    public SearchFilter(long beginDate, String[] newsDesk, SortOrder sortOrder, boolean[] checkboxes) {
+    public NYTSearchFilter(long beginDate, String[] newsDesk, SortOrder sortOrder, boolean[] checkboxes) {
         this.beginDate = beginDate;
         this.newsDesk = newsDesk;
         this.sortOrder = sortOrder;
         this.checkboxes = checkboxes;
     }
 
-    public static Bundle getBundle(SearchFilter filter) {
+    public static Bundle getBundle(NYTSearchFilter filter) {
         Bundle bundle = new Bundle();
         if (filter == null)
-            filter = new SearchFilter();
+            filter = new NYTSearchFilter();
         bundle.putLong(BEGIN_DATE, filter.beginDate);
         bundle.putStringArray(NEWS_DESK, filter.newsDesk);
         bundle.putString(SORT_ORDER, filter.sortOrder.name());

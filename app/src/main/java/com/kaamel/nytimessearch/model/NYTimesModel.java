@@ -1,9 +1,11 @@
-package com.kaamel.nytimessearch;
+package com.kaamel.nytimessearch.model;
 
 import android.os.Handler;
 
 import com.google.gson.annotations.SerializedName;
-import com.kaamel.Utils;
+import com.kaamel.nytimessearch.utils.Utils;
+import com.kaamel.nytimessearch.data.Article;
+import com.kaamel.nytimessearch.data.SearchFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class NYTimesModel extends NewsSourceAbst {
 
     private static final int RETRY = 3;
 
-    NYTimesModel() {
+    public NYTimesModel() {
         super();
     }
 
@@ -45,22 +47,22 @@ public class NYTimesModel extends NewsSourceAbst {
     @Override
     public void getArticles(String query, int page, SearchFilter filter, final OnDownladArticles onDownladArticles) {
         Map<String, String> queryMap = new HashMap<>();
-        if (filter.sortOrder != SearchFilter.SortOrder.NONE) {
+        if (filter.getSortorder() != SearchFilter.SortOrder.NONE) {
             String sort = "newest";
-            if (filter.sortOrder == SearchFilter.SortOrder.OLDEST) {
+            if (filter.getSortorder() == SearchFilter.SortOrder.OLDEST) {
                 sort = "oldest";
             }
             queryMap.put("sort", sort);
         }
 
-        if (filter.beginDate >0)
-            queryMap.put ("begin_date", Utils.longToNYTDateString(filter.beginDate));
+        if (filter.getBeginDate() >0)
+            queryMap.put ("begin_date", Utils.longToNYTDateString(filter.getBeginDate()));
 
         String fq = "";
-        if (filter.newsDesk != null && filter.newsDesk.length>0) {
+        if (filter.getCategories() != null && filter.getCategories().length>0) {
             boolean b = false;
             fq = "news_desk:(\"";
-            for (String item: filter.newsDesk) {
+            for (String item: filter.getCategories()) {
                 if (b)
                     fq = fq + " \"";
                 fq = fq + item + "\"";
@@ -167,7 +169,7 @@ public class NYTimesModel extends NewsSourceAbst {
     }
 
     @Override
-    int getPageSize() {
+    public int getPageSize() {
         return pageSize;
     }
 
