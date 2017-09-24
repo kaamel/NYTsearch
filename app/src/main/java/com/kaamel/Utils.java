@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class Utils {
     private static final long DAY_IN_MILLI = 24 * 60 * 60 * 1000;
@@ -54,22 +55,27 @@ public class Utils {
         return formatter.format(date);
     }
 
-    public static String localNytTimeToLong (String ntime) {
-        if (ntime == null)
+    public static String localNytTimeToLong (String sTime) {
+        if (sTime == null)
             return "";
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String fTime = ntime.substring(0, ntime.length()-5);
-        fTime = fTime.replace("T", " ");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         formatter.setLenient(false);
         long time = 0;
         try {
-            time = formatter.parse(fTime).getTime();
+            time = formatter.parse(sTime).getTime();
+            DateFormat sdtf = SimpleDateFormat.getDateTimeInstance();
+            sdtf.setTimeZone(TimeZone.getDefault());
+            return  sdtf.format(new Date(time)) + " " + sdtf.getTimeZone().getDisplayName(false, TimeZone.SHORT);
         } catch (ParseException ignored) {
-        }
-        if (time == 0)
             return "";
-        else
-            return longToDateString(time);
+        }
+    }
+
+    public static String longToDateStringLongFormat(long time) {
+        Date date = new Date(time);
+        DateFormat formatter = DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault());
+        formatter.setLenient(false);
+        return formatter.format(date);
     }
 
     public static String longToNYTDateString(long time) {

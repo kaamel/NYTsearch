@@ -1,5 +1,7 @@
 package com.kaamel.nytimessearch;
 
+import android.os.Handler;
+
 import com.google.gson.annotations.SerializedName;
 import com.kaamel.Utils;
 
@@ -23,11 +25,13 @@ import retrofit2.http.QueryMap;
 
 public class NYTimesModel extends NewsSourceAbst {
 
-    private static final String API_KEY =  "227c750bb7714fc39ef1559ef1bd8329"; //"da9e50c7db454f93b8e15e49cdae794c";
+    private static final String API_KEY =  "227c750bb7714fc39ef1559ef1bd8329";
     private static final String BASE_URL = "https://api.nytimes.com/svc/search/v2/" ;
-    private static final String ARTICLES = "articlesearch.json"; //+ "?api-key=" + API_KEY;
+    private static final String ARTICLES = "articlesearch.json";
 
     private static final int pageSize = 10;
+
+    private static final int RETRY = 3;
 
     NYTimesModel() {
         super();
@@ -35,30 +39,7 @@ public class NYTimesModel extends NewsSourceAbst {
 
     @Override
     public void getArticles(String query, int page, final OnDownladArticles onDownladArticles) {
-        ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
-            @Override
-            public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
-                int statusCode = response.code();
-                if (response.isSuccessful()) {
-                    NYTResponse nytResponse = response.body();
-                    onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
-                }
-                else {
-                    String error = "Unknown error";
-                    try {
-                        error = response.errorBody().string();
-                    } catch (IOException e) {
-
-                    }
-                    onDownladArticles.onFailedDownload(new Throwable(error));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<NYTResponse> call, Throwable t) {
-                onDownladArticles.onFailedDownload(t);
-            }
-        });
+        callSimple(query, page, onDownladArticles, RETRY);
     }
 
     @Override
@@ -90,10 +71,23 @@ public class NYTimesModel extends NewsSourceAbst {
         }
 
         if (queryMap.size()>0)
-            ((NYTApiService) apiService).getArticles(query, page, queryMap).enqueue(new Callback<NYTResponse>() {
+            callFull(query, page, filter, queryMap, onDownladArticles, RETRY);
+        else
+            callSimple(query, page, onDownladArticles, RETRY);
+    }
+
+    private void callSimple (String query, int page, final OnDownladArticles onDownladArticles, int retry) {
+        ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
             @Override
             public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
                 int statusCode = response.code();
+                if (response.code() == 429) {
+                    //Rate limit is exceeded
+                    if (retry > 0) {
+                        retrySimple(query, page, onDownladArticles, retry - 1);
+                        return;
+                    }
+                }
                 if (response.isSuccessful()) {
                     NYTResponse nytResponse = response.body();
                     onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
@@ -114,31 +108,62 @@ public class NYTimesModel extends NewsSourceAbst {
                 onDownladArticles.onFailedDownload(t);
             }
         });
-        else
-            ((NYTApiService) apiService).getArticles(query, page).enqueue(new Callback<NYTResponse>() {
-                @Override
-                public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
-                    int statusCode = response.code();
-                    if (response.isSuccessful()) {
-                        NYTResponse nytResponse = response.body();
-                        onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
-                    }
-                    else {
-                        String error = "Unknown error";
-                        try {
-                            error = response.errorBody().string();
-                        } catch (IOException e) {
+    }
 
-                        }
-                        onDownladArticles.onFailedDownload(new Throwable(error));
+    private void callFull(String query, int page, SearchFilter filter, Map<String, String> queryMap, OnDownladArticles onDownladArticles, int retry) {
+        ((NYTApiService) apiService).getArticles(query, page, queryMap).enqueue(new Callback<NYTResponse>() {
+            @Override
+            public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
+                int statusCode = response.code();
+                if (response.code() == 429) {
+                    //Rate limit is exceeded
+                    if (retry > 1) {
+                        retryFull(query, page, filter, queryMap, onDownladArticles, retry-1);
                     }
+                    return;
                 }
+                if (response.isSuccessful()) {
+                    NYTResponse nytResponse = response.body();
+                    onDownladArticles.onSuccessfulDownladArticles((List<? extends Article>) nytResponse.response.articles);
+                }
+                else {
+                    String error = "Unknown error";
+                    try {
+                        error = response.errorBody().string();
+                    } catch (IOException e) {
 
-                @Override
-                public void onFailure(Call<NYTResponse> call, Throwable t) {
-                    onDownladArticles.onFailedDownload(t);
+                    }
+                    onDownladArticles.onFailedDownload(new Throwable(error));
                 }
-            });
+            }
+
+            @Override
+            public void onFailure(Call<NYTResponse> call, Throwable t) {
+                onDownladArticles.onFailedDownload(t);
+            }
+        });
+    }
+
+    private void retryFull(String query, int page, SearchFilter filter, Map<String, String> queryMap, OnDownladArticles onDownladArticles, int retry) {
+        Handler handler = new Handler();
+        Runnable runnableCode = new Runnable() {
+            @Override
+            public void run() {
+                callFull(query, page, filter, queryMap, onDownladArticles, retry);
+            }
+        };
+        handler.postDelayed(runnableCode, 1000);
+    }
+
+    private void retrySimple(String query, int page, OnDownladArticles onDownladArticles, int retry) {
+        Handler handler = new Handler();
+        Runnable runnableCode = new Runnable() {
+            @Override
+            public void run() {
+                callSimple(query, page, onDownladArticles, retry);
+            }
+        };
+        handler.postDelayed(runnableCode, 1000);
     }
 
     @Override

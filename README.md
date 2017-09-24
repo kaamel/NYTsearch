@@ -2,7 +2,7 @@
 
 **NY Times Search** is an android app that allows a user to search for articles on web using simple filters. The app utilizes [New York Times Search API](http://developer.nytimes.com/docs/read/article_search_api_v2).
 
-Time spent: **4** hours spent in total
+Time spent: **25** hours spent in total
 
 ## User Stories
 
@@ -40,7 +40,9 @@ The following **bonus** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you can get done to improve the app functionality!
+* [x] List anything else that you can get done to improve the app functionality!
+* If API limit is reached, the API is rettied, up to 3 times, witha one second delay (simples to work perfectly!)
+* Publication time is converted and displayed in local time and with Locale formating
 
 ## Video Walkthrough
 
@@ -61,7 +63,7 @@ Describe any challenges encountered while building the app.
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright [2017] [Kaamel Kermaani]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
