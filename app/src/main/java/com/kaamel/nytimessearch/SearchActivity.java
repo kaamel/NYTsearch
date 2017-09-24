@@ -1,12 +1,18 @@
 package com.kaamel.nytimessearch;
 
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -208,8 +214,40 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void onArticleClicked(int position) {
+        //***************** Use the DetailArticleActivity with a WebView
+        /*
         Intent intent = new Intent(this, DetailArticleActivity.class);
         intent.putExtra("web_url", articles.get(position).getWebUrl());
         startActivity(intent);
+        */
+
+        //***************** Using CustomChromeTab
+        // Use a CustomTabsIntent.Builder to configure CustomTabsIntent.
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        // set toolbar color and/or setting custom actions before invoking build()
+        // set toolbar color
+        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorAccent));
+        // add share action to menu list
+        builder.addDefaultShareMenuItem();
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_share);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, articles.get(position).getWebUrl());
+
+        int requestCode = 100;
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        // Map the bitmap, text, and pending intent to this icon
+        // Set tint to be true so it matches the toolbar color
+        builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
+
+
+        // Once ready, call CustomTabsIntent.Builder.build() to create a CustomTabsIntent
+        CustomTabsIntent customTabsIntent = builder.build();
+        // and launch the desired Url with CustomTabsIntent.launchUrl()
+        customTabsIntent.launchUrl(this, Uri.parse(articles.get(position).getWebUrl()));
     }
 }
