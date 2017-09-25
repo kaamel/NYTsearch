@@ -3,6 +3,7 @@ package com.kaamel.nytimessearch.dialogfragments;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,12 +56,14 @@ public class EditFilterDialogFragment extends AppCompatDialogFragment implements
         if (getArguments() != null) {
             filter = NYTSearchFilter.getFilter(getArguments().getBundle(FILTER));
         }
+        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light_Dialog);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        getDialog().setTitle("Filter Articles");
         View v = inflater.inflate(R.layout.dialog_edit_filter, container, false);
 
         final Spinner newsDesks = v.findViewById(R.id.spNewsDesk);

@@ -236,12 +236,6 @@ public class NYTimesModel extends NewsSourceAbst {
             String subtype;
         }
 
-        public NYTArticle(String webUrl, HeadLine headline, List<MM> multimedia ) {
-            this.webUrl = webUrl;
-            headlineObj = headline;
-            this.multimedia = multimedia;
-        }
-
         @Override
         public String getSnippet() {
             return snippet;
@@ -269,11 +263,19 @@ public class NYTimesModel extends NewsSourceAbst {
 
         @Override
         public String getThumbNail() {
+            String wide= null;
+            String xlarge = null;
             for (MM mm:multimedia) {
                 if (mm.subtype.equals("thumbnail"))
                     return mm.url;
+                else if(mm.subtype.equals("wide"))
+                    wide = mm.url;
+                else if (mm.subtype.equals("xlarge"))
+                    xlarge = mm.url;
             }
-            return null;
+            if (wide != null)
+                return wide;
+            return xlarge;
         }
 
         private class HeadLine {
